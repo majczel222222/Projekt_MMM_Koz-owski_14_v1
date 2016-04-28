@@ -9,22 +9,14 @@ import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 import javax.swing.JOptionPane;
 
-
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 /**
  *
  * @author majcz_000
  */
 public class Window extends javax.swing.JFrame 
-{
-    
+{  
      
-    BackGround bgPanel = new BackGround(); //image of non-linear block
+   // BackGround bgPanel = new BackGround(); //image of non-linear block
     
     XYSeries series_stim;                  //stimulation data series 
     XYSeries series_ans;                  //answer data series 
@@ -39,7 +31,8 @@ public class Window extends javax.swing.JFrame
     /**
      * Creates new form Window
      */
-    public Window() {
+    public Window() 
+    {
         initComponents();
         setResizable(false);
         setLocationRelativeTo(null);
@@ -230,7 +223,7 @@ public class Window extends javax.swing.JFrame
         double Step_Size_copy = Double.parseDouble(Step_Size.getText());
 ///*
         try
-           {
+          {
            
            Calculate.Amp_copy = Double.parseDouble(Amp.getText());
            Calculate.Period_copy = Double.parseDouble(Period.getText());
@@ -238,17 +231,23 @@ public class Window extends javax.swing.JFrame
            Calculate.a_copy = Double.parseDouble(a.getText());
            Calculate.T_copy = Double.parseDouble(T.getText());
                  
-           if(Calculate.A_copy < 0 || Calculate.a_copy < 0 || Calculate.T_copy < 0)            // checks if the parameters are correct            
+           if(Calculate.A_copy < 0 || Calculate.a_copy < 0 || Calculate.T_copy < 0)        // checks if the parameters are correct  
+           {          
             JOptionPane.showMessageDialog(null,"Parametry: A, a, T muszą być dodatnie!",null,JOptionPane.ERROR_MESSAGE); 
-            return;    
-            
-           if(Calculate.Period_copy > 400)                        // checks if the parameters are correct            
-            JOptionPane.showMessageDialog(null,"Za długi czas symulacji!",null,JOptionPane.ERROR_MESSAGE); 
             return;
-            
-           if(Calculate.Amp_copy < 0 ||  Calculate.Period_copy< 0)                        // checks if the parameters are correct            
+           }
+           
+           if(Calculate.Amp_copy < 0 ||  Calculate.Period_copy< 0)              // checks if the parameters are correct 
+           {           
             JOptionPane.showMessageDialog(null,"Amplituda i Czas muszą być dodatnie!",null,JOptionPane.ERROR_MESSAGE); 
             return;
+           }
+           
+           if(Calculate.Period_copy > 400){                        // checks if the parameters are correct            
+            JOptionPane.showMessageDialog(null,"Za długi czas symulacji!",null,JOptionPane.ERROR_MESSAGE); 
+            return;
+           }
+           
            
             }
         catch(NumberFormatException err)
@@ -257,14 +256,18 @@ public class Window extends javax.swing.JFrame
             return;
         } 
         
-           if(Step_Size_copy < 0)                        // checks if the parameters are correct            
+           if(Step_Size_copy < 0)                        // checks if the parameters are correct  
+           {    
             JOptionPane.showMessageDialog(null,"Krok symulacji nie może być ujemny!",null,JOptionPane.ERROR_MESSAGE); 
             return;
+           }
             
-           if(Step_Size_copy < 0.001)                        // checks if the parameters are correct            
+           if(Step_Size_copy < 0.001)                        // checks if the parameters are correct   
+           {    
             JOptionPane.showMessageDialog(null,"Za mały krok symulacji! Może spowodować zawieszenie komputera",null,JOptionPane.ERROR_MESSAGE); 
             return;
-            
+           }
+         
             Stimulation_Type = stimulation_type.getSelectedIndex();
            
             series_stim = new XYSeries("Pubudzenie");
@@ -272,6 +275,60 @@ public class Window extends javax.swing.JFrame
             series_err = new XYSeries("Uchyb");
             
             XYSeriesCollection dataSet = new XYSeriesCollection();
+            
+            double stimulate;   
+            double y_t1 = 0;
+            double y_t2 = 0;
+            double y_t3 = 0;
+            double y_poch = 0;
+
+        
+        for (double i = 0; i <= Calculate.Period_copy; i += Step_Size_copy)
+        {
+            stimulate = Calculate.Stimulation(Stimulation_Type, i, Step_Size_copy);
+            series_stim.add(i, stimulate);   
+            /*
+            double y_poch_akt = y_poch;
+            y_poch = licz.Euler_2poch(y_poch, pobudz, y_t1, krok);
+            
+            y_t1 = licz.Euler_y_t1(y_poch, y_poch_akt, krok);
+            y_t2 = licz.Euler_y_t2(y_t1);
+            y_t3 = licz.Euler_y_t3(y_t2);
+            
+            series_ans.add(i, y_t1);
+            series_err.add(i, y_t2);       
+            */
+        }
+        
+        dataSet.addSeries(series_stim);
+        dataSet.addSeries(series_ans);
+        dataSet.addSeries(series_err);
+        
+        if(start_simulation){
+            JFreeChart chart;
+            chart = ChartFactory.createXYLineChart(
+                    "Odpowiedź układu",//Tytuł
+                    "Czas [s]", // x-axis Opis
+                    "Wartość amplitudy", // y-axis Opis
+                    dataSet, // Dane
+                    PlotOrientation.VERTICAL, // Orjentacja wykresu /HORIZONTAL/VERTICAL
+                    true, // pozkaż legende
+                    true, // podpowiedzi tooltips
+                    false
+            );
+
+            ChartPanel chart1 = new ChartPanel(chart);
+                
+            Chart.removeAll();
+            Chart.setLayout(new BorderLayout());         
+            Chart.add(chart1, BorderLayout.CENTER);
+            Chart.validate();
+                
+        }
+        else start_simulation = false;
+            
+   
+   }
              
     /**
      * @param args the command line arguments
@@ -330,3 +387,4 @@ public class Window extends javax.swing.JFrame
     private javax.swing.JComboBox stimulation_type;
     // End of variables declaration//GEN-END:variables
 }
+
