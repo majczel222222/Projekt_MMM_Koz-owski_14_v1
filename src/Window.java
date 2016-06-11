@@ -1,3 +1,4 @@
+
 import java.awt.BorderLayout;
 import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
@@ -13,31 +14,25 @@ import javax.swing.JOptionPane;
  *
  * @author majcz_000
  */
-public class Window extends javax.swing.JFrame 
-{  
-     
-   // BackGround bgPanel = new BackGround(); //image of non-linear block
-    
+public class Window extends javax.swing.JFrame {
+
+    // BackGround bgPanel = new BackGround(); //image of non-linear block
     XYSeries series_stim;                  //stimulation data series 
     XYSeries series_ans;                  //answer data series 
     XYSeries series_err;                   //error data series 
-    
-    
-   boolean start_simulation = false;
-   
-   int Stimulation_Type = 0;               //0-square, 1-triangle, 2-sin
 
+    boolean start_simulation = false;
 
+    int Stimulation_Type = 0;               //0-prostokąt, 1-trójkąt, 2-sinusoida, 3-delta
+    int Method = 0;                         //0-Całkowanie metodą prostokątów, 1-Całkowanie metodą paraboli, 2-Całkowanie metodą trapezów 
     /**
      * Creates new form Window
      */
-    public Window() 
-    {
+    public Window() {
         initComponents();
         setResizable(false);
         setLocationRelativeTo(null);
     }
-     
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -65,6 +60,10 @@ public class Window extends javax.swing.JFrame
         Amp = new javax.swing.JTextField();
         jLabel9 = new javax.swing.JLabel();
         Chart = new javax.swing.JPanel();
+        jLabel1 = new javax.swing.JLabel();
+        Length = new javax.swing.JTextField();
+        jLabel10 = new javax.swing.JLabel();
+        method = new javax.swing.JComboBox();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -73,22 +72,51 @@ public class Window extends javax.swing.JFrame
 
         T.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         T.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        T.setText("1");
+        T.setToolTipText("");
+        T.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                TActionPerformed(evt);
+            }
+        });
 
         jLabel6.setText("Amplituda");
 
         jLabel7.setText("Czas[s]");
 
         Period.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        Period.setText("1");
+        Period.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                PeriodActionPerformed(evt);
+            }
+        });
 
         Start_Simulation.setFont(new java.awt.Font("Tahoma", 1, 24)); // NOI18N
         Start_Simulation.setForeground(new java.awt.Color(255, 0, 0));
         Start_Simulation.setText("Symuluj");
+        Start_Simulation.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                Start_SimulationActionPerformed(evt);
+            }
+        });
 
         Step_Size.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        Step_Size.setText("0.01");
+        Step_Size.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                Step_SizeActionPerformed(evt);
+            }
+        });
 
         jLabel8.setText("Krok");
 
-        stimulation_type.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Prostokąt", "Trójkąt", "Sinusoida" }));
+        stimulation_type.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Prostokąt", "Trójkąt", "Sinusoida", "Delta" }));
+        stimulation_type.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                stimulation_typeActionPerformed(evt);
+            }
+        });
 
         jLabel2.setFont(new java.awt.Font("Tahoma", 1, 16)); // NOI18N
         jLabel2.setForeground(new java.awt.Color(255, 0, 0));
@@ -100,14 +128,33 @@ public class Window extends javax.swing.JFrame
 
         A.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         A.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        A.setText("1");
+        A.setToolTipText("");
+        A.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                AActionPerformed(evt);
+            }
+        });
 
         a.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         a.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        a.setText("1");
+        a.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                aActionPerformed(evt);
+            }
+        });
 
         jLabel4.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jLabel4.setText("A:");
 
         Amp.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        Amp.setText("10");
+        Amp.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                AmpActionPerformed(evt);
+            }
+        });
 
         jLabel9.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jLabel9.setText("a:");
@@ -125,6 +172,24 @@ public class Window extends javax.swing.JFrame
             .addGap(0, 0, Short.MAX_VALUE)
         );
 
+        jLabel1.setText("Długość");
+
+        Length.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        Length.setText("5");
+        Length.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                LengthActionPerformed(evt);
+            }
+        });
+
+        jLabel10.setFont(new java.awt.Font("Tahoma", 1, 16)); // NOI18N
+        jLabel10.setForeground(new java.awt.Color(255, 0, 0));
+        jLabel10.setText("Sposób całkowania:");
+
+        method.setBackground(new java.awt.Color(240, 240, 240));
+        method.setForeground(getForeground());
+        method.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Prostokąt", "Parabola", "Trapez" }));
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -132,41 +197,45 @@ public class Window extends javax.swing.JFrame
             .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                            .addComponent(jLabel3, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                    .addComponent(stimulation_type, javax.swing.GroupLayout.Alignment.LEADING, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                                .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                            .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 63, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addComponent(Period, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                            .addComponent(Amp, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                            .addComponent(Step_Size, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                                .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 136, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addComponent(jLabel10, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jLabel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(T, javax.swing.GroupLayout.PREFERRED_SIZE, 87, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(Start_Simulation, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 161, Short.MAX_VALUE)
+                            .addComponent(method, javax.swing.GroupLayout.Alignment.LEADING, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGap(56, 56, 56))
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                .addComponent(jLabel3, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                                .addComponent(stimulation_type, javax.swing.GroupLayout.Alignment.LEADING, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                            .addComponent(jLabel6, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 71, Short.MAX_VALUE)
+                                            .addComponent(jLabel7, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 71, Short.MAX_VALUE)
+                                            .addComponent(jLabel1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                        .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 63, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                        .addComponent(Period, javax.swing.GroupLayout.DEFAULT_SIZE, 95, Short.MAX_VALUE)
+                                        .addComponent(Amp, javax.swing.GroupLayout.DEFAULT_SIZE, 95, Short.MAX_VALUE)
+                                        .addComponent(Length)
+                                        .addComponent(Step_Size)))
+                                .addComponent(jLabel2, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 136, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGroup(layout.createSequentialGroup()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabel9, javax.swing.GroupLayout.PREFERRED_SIZE, 56, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addComponent(jLabel9, javax.swing.GroupLayout.PREFERRED_SIZE, 56, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(A, javax.swing.GroupLayout.PREFERRED_SIZE, 87, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(a, javax.swing.GroupLayout.PREFERRED_SIZE, 87, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(A, javax.swing.GroupLayout.PREFERRED_SIZE, 87, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                .addComponent(Start_Simulation, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addGroup(layout.createSequentialGroup()
-                                    .addComponent(jLabel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addGap(61, 61, 61)
-                                    .addComponent(T, javax.swing.GroupLayout.PREFERRED_SIZE, 87, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                        .addGap(56, 56, 56)))
+                                .addComponent(a, javax.swing.GroupLayout.PREFERRED_SIZE, 87, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                 .addComponent(Chart, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
         layout.setVerticalGroup(
@@ -176,35 +245,42 @@ public class Window extends javax.swing.JFrame
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(stimulation_type, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(Amp, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(Amp, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(Period, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(7, 7, 7)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(Step_Size)
-                    .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(Step_Size, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(8, 8, 8)
+                        .addComponent(Length)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(72, 72, 72)
-                        .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jLabel9, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(a, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(A, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(T, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addGap(197, 197, 197)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(a, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel9, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(A, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(T, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel10, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(method, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(70, 70, 70)
                 .addComponent(Start_Simulation, javax.swing.GroupLayout.PREFERRED_SIZE, 57, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
             .addGroup(layout.createSequentialGroup()
@@ -214,79 +290,74 @@ public class Window extends javax.swing.JFrame
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
- private void Start_SimulationActionPerformed(java.awt.event.ActionEvent evt)
-   {                                              
 
+    private void Start_SimulationActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Start_SimulationActionPerformed
         start_simulation = true;
 
         Calculations Calculate = new Calculations();
         double Step_Size_copy = Double.parseDouble(Step_Size.getText());
-///*
-        try
-          {
-           
-           Calculate.Amp_copy = Double.parseDouble(Amp.getText());
-           Calculate.Period_copy = Double.parseDouble(Period.getText());
-           Calculate.A_copy = Double.parseDouble(A.getText());
-           Calculate.a_copy = Double.parseDouble(a.getText());
-           Calculate.T_copy = Double.parseDouble(T.getText());
-                 
-           if(Calculate.A_copy < 0 || Calculate.a_copy < 0 || Calculate.T_copy < 0)        // checks if the parameters are correct  
-           {          
-            JOptionPane.showMessageDialog(null,"Parametry: A, a, T muszą być dodatnie!",null,JOptionPane.ERROR_MESSAGE); 
-            return;
-           }
-           
-           if(Calculate.Amp_copy < 0 ||  Calculate.Period_copy< 0)              // checks if the parameters are correct 
-           {           
-            JOptionPane.showMessageDialog(null,"Amplituda i Czas muszą być dodatnie!",null,JOptionPane.ERROR_MESSAGE); 
-            return;
-           }
-           
-           if(Calculate.Period_copy > 400){                        // checks if the parameters are correct            
-            JOptionPane.showMessageDialog(null,"Za długi czas symulacji!",null,JOptionPane.ERROR_MESSAGE); 
-            return;
-           }
-           
-           
-            }
-        catch(NumberFormatException err)
-        {   
-            JOptionPane.showMessageDialog(null,"Proszę wpisać liczby lub nie używać przecinków.",null,JOptionPane.ERROR_MESSAGE); //error okienko
-            return;
-        } 
+        double Length_copy = Double.parseDouble(Length.getText());
+        Calculate.Period_copy = Double.parseDouble(Period.getText());
+        Calculate.A_copy = Double.parseDouble(A.getText());
+        Calculate.a_copy = Double.parseDouble(a.getText());
+        Calculate.T_copy = Double.parseDouble(T.getText());
+        Calculate.Amp_copy = Double.parseDouble(Amp.getText());
         
-           if(Step_Size_copy < 0)                        // checks if the parameters are correct  
-           {    
-            JOptionPane.showMessageDialog(null,"Krok symulacji nie może być ujemny!",null,JOptionPane.ERROR_MESSAGE); 
-            return;
-           }
-            
-           if(Step_Size_copy < 0.001)                        // checks if the parameters are correct   
-           {    
-            JOptionPane.showMessageDialog(null,"Za mały krok symulacji! Może spowodować zawieszenie komputera",null,JOptionPane.ERROR_MESSAGE); 
-            return;
-           }
-         
-            Stimulation_Type = stimulation_type.getSelectedIndex();
-           
-            series_stim = new XYSeries("Pubudzenie");
-            series_ans = new XYSeries("Odpowiedź");
-            series_err = new XYSeries("Uchyb");
-            
-            XYSeriesCollection dataSet = new XYSeriesCollection();
-            
-            double stimulate;   
-            double y_t1 = 0;
-            double y_t2 = 0;
-            double y_t3 = 0;
-            double y_poch = 0;
+///*             
+        try {
 
-        
-        for (double i = 0; i <= Calculate.Period_copy; i += Step_Size_copy)
+            if (Calculate.A_copy < 0 || Calculate.a_copy < 0 || Calculate.T_copy < 0) // checks if the parameters are correct  
+            {
+                JOptionPane.showMessageDialog(null, "Parametry: A, a, T muszą być dodatnie!", null, JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            if (Calculate.Amp_copy < 0 || Calculate.Period_copy < 0) // checks if the parameters are correct 
+            {
+                JOptionPane.showMessageDialog(null, "Amplituda i Czas muszą być dodatnie!", null, JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            if (Calculate.Period_copy > 400) {                        // checks if the parameters are correct            
+                JOptionPane.showMessageDialog(null, "Za długi czas symulacji!", null, JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+        } catch (NumberFormatException err) {
+            JOptionPane.showMessageDialog(null, "Proszę wpisać liczby lub nie używać przecinków.", null, JOptionPane.ERROR_MESSAGE); //error okienko
+            return;
+        }
+//*/
+        if (Step_Size_copy < 0) // checks if the parameters are correct  
         {
+            JOptionPane.showMessageDialog(null, "Krok symulacji nie może być ujemny!", null, JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        if (Step_Size_copy < 0.001) // checks if the parameters are correct   
+        {
+            JOptionPane.showMessageDialog(null, "Za mały krok symulacji! Może spowodować zawieszenie komputera", null, JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        Stimulation_Type = stimulation_type.getSelectedIndex();
+        Method = method.getSelectedIndex();
+
+        series_stim = new XYSeries("Pubudzenie");
+        series_ans = new XYSeries("Odpowiedź");
+        series_err = new XYSeries("Uchyb");
+
+        XYSeriesCollection dataSet = new XYSeriesCollection();
+
+        double stimulate;
+        //double y_t1 = 0;
+        //double y_t2 = 0;
+        //double y_t3 = 0;
+        //double y_poch = 0;
+
+        for (double i = 0; i <= Length_copy; i += Step_Size_copy) {
             stimulate = Calculate.Stimulation(Stimulation_Type, i, Step_Size_copy);
-            series_stim.add(i, stimulate);   
+            series_stim.add(i, stimulate);
             /*
             double y_poch_akt = y_poch;
             y_poch = licz.Euler_2poch(y_poch, pobudz, y_t1, krok);
@@ -297,39 +368,71 @@ public class Window extends javax.swing.JFrame
             
             series_ans.add(i, y_t1);
             series_err.add(i, y_t2);       
-            */
+             */
         }
-        
+
         dataSet.addSeries(series_stim);
         dataSet.addSeries(series_ans);
         dataSet.addSeries(series_err);
-        
-        if(start_simulation){
+
+        if (start_simulation) { 
             JFreeChart chart;
             chart = ChartFactory.createXYLineChart(
-                    "Odpowiedź układu",//Tytuł
-                    "Czas [s]", // x-axis Opis
-                    "Wartość amplitudy", // y-axis Opis
-                    dataSet, // Dane
-                    PlotOrientation.VERTICAL, // Orjentacja wykresu /HORIZONTAL/VERTICAL
-                    true, // pozkaż legende
-                    true, // podpowiedzi tooltips
+                    "Odpowiedź układu",//Title      
+                    "Czas [s]", // x-axis 
+                    "Wartość amplitudy", // y-axis 
+                    dataSet, // Data
+                    PlotOrientation.VERTICAL, // /HORIZONTAL/VERTICAL
+                    true, // show legend    
+                    true, // tooltips
                     false
             );
 
             ChartPanel chart1 = new ChartPanel(chart);
-                
+
             Chart.removeAll();
-            Chart.setLayout(new BorderLayout());         
+            Chart.setLayout(new BorderLayout());
             Chart.add(chart1, BorderLayout.CENTER);
             Chart.validate();
-                
+
+        } else {
+            start_simulation = false;
         }
-        else start_simulation = false;
-            
-   
-   }
-             
+
+    }//GEN-LAST:event_Start_SimulationActionPerformed
+
+    private void AmpActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_AmpActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_AmpActionPerformed
+
+    private void PeriodActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_PeriodActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_PeriodActionPerformed
+
+    private void Step_SizeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Step_SizeActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_Step_SizeActionPerformed
+
+    private void aActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_aActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_aActionPerformed
+
+    private void AActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_AActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_AActionPerformed
+
+    private void TActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_TActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_TActionPerformed
+
+    private void LengthActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_LengthActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_LengthActionPerformed
+
+    private void stimulation_typeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_stimulation_typeActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_stimulation_typeActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -371,11 +474,14 @@ public class Window extends javax.swing.JFrame
     private javax.swing.JTextField A;
     private javax.swing.JTextField Amp;
     private javax.swing.JPanel Chart;
+    private javax.swing.JTextField Length;
     private javax.swing.JTextField Period;
     private javax.swing.JButton Start_Simulation;
     private javax.swing.JTextField Step_Size;
     private javax.swing.JTextField T;
     private javax.swing.JTextField a;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
@@ -384,7 +490,7 @@ public class Window extends javax.swing.JFrame
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
+    private javax.swing.JComboBox method;
     private javax.swing.JComboBox stimulation_type;
     // End of variables declaration//GEN-END:variables
 }
-
