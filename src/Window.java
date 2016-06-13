@@ -25,6 +25,7 @@ public class Window extends javax.swing.JFrame {
 
     int Stimulation_Type = 0;               //0-prostokąt, 1-trójkąt, 2-sinusoida, 3-delta
     int Method = 0;                         //0-Całkowanie metodą prostokątów, 1-Całkowanie metodą paraboli, 2-Całkowanie metodą trapezów 
+
     /**
      * Creates new form Window
      */
@@ -303,6 +304,7 @@ public class Window extends javax.swing.JFrame {
         Calculate.T_copy = Double.parseDouble(T.getText());
         Calculate.Amp_copy = Double.parseDouble(Amp.getText());
         
+
 ///*             
         try {
 
@@ -350,13 +352,17 @@ public class Window extends javax.swing.JFrame {
         XYSeriesCollection dataSet = new XYSeriesCollection();
 
         double stimulate;
-        //double y_t1 = 0;
-        //double y_t2 = 0;
-        //double y_t3 = 0;
-        //double y_poch = 0;
-
+        double X1;
+        double W;
+       
         for (double i = 0; i <= Length_copy; i += Step_Size_copy) {
+           
             stimulate = Calculate.Stimulation(Stimulation_Type, i, Step_Size_copy);
+            W = Calculate.NonLinearBlock(i);
+            X1 = Calculate.SystemAnswer(i);
+
+            
+            
             series_stim.add(i, stimulate);
             /*
             double y_poch_akt = y_poch;
@@ -366,16 +372,20 @@ public class Window extends javax.swing.JFrame {
             y_t2 = licz.Euler_y_t2(y_t1);
             y_t3 = licz.Euler_y_t3(y_t2);
             
-            series_ans.add(i, y_t1);
+            series_ans.add(i, x4 );
             series_err.add(i, y_t2);       
              */
+            series_ans.add(i, X1);
+            series_err.add(i, W);
+            
+            
         }
 
         dataSet.addSeries(series_stim);
         dataSet.addSeries(series_ans);
         dataSet.addSeries(series_err);
 
-        if (start_simulation) { 
+        if (start_simulation) {
             JFreeChart chart;
             chart = ChartFactory.createXYLineChart(
                     "Odpowiedź układu",//Title      

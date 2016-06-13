@@ -12,7 +12,18 @@ public class Calculations {
     double A_copy, a_copy, T_copy;
     double Period_copy, Amp_copy, Step_Size_copy;
     int Method;
-    
+     double w;
+    private double x2;
+    private double x2derivative;
+    private double Previousx2;
+    private double PrePreviousx2;
+    private double Previousx1;
+     double x1;
+    private double PrePreviousx1;
+    private double x2derivativePrevious;
+    private double x2derivativePrePrevious;
+    private double k;
+
     //Funkcja wyliczająca wartości dla pobudzeń
     double Stimulation(int Stimulation_Type, double Value_copy, double Step_Size_copy) {
         switch (Stimulation_Type) {
@@ -73,10 +84,39 @@ public class Calculations {
         return 0;
     }
     //Modelowanie układu
-    double SystemAnswer(double t){
-        return;
+
+    double NonLinearBlock(double t) {
+        
+        k = A_copy/a_copy;
+        
+        if(a_copy/Amp_copy < -1){
+            w = -k;
+        }
+        else if(Math.abs(a_copy/Amp_copy) <= 1){
+            w = (((k*2)/Math.PI)*Math.asin(a_copy/Amp_copy))+(a_copy/Amp_copy)*Math.sqrt(1+((a_copy*a_copy)/(Amp_copy*Amp_copy)));
+        }
+        else if(a_copy/Amp_copy > 1){
+            w = k;
+        }
+
+        return w;
     }
-    double SystemErr(double t){
-        return;
+
+    double SystemAnswer(double t) {
+
+        x2derivative = ((-1 / T_copy) * x2) + ((1 / T_copy) * w);
+
+        x1 = integrale(t, x2, Previousx2, PrePreviousx2, Previousx1);
+        PrePreviousx1 = Previousx1;
+        Previousx1 = x1;
+
+        x2 = integrale(t, x2derivative, x2derivativePrevious, x2derivativePrePrevious, Previousx2);
+        PrePreviousx2 = Previousx2;
+        Previousx2 = x2;
+
+        x2derivativePrePrevious = x2derivativePrevious;
+        x2derivativePrevious = x2derivative;
+
+        return x1;
     }
 }
